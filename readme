@@ -1,0 +1,18 @@
+# build docker
+docker build --platform linux/amd64 -t dse00b/movetoen .
+
+# push to docker hub
+docker push dse00b/movetoen
+
+# stop container
+sudo docker rm -f movetoen
+
+# pull latest from docker hub
+sudo docker pull dse00b/movetoen:latest
+
+# run docker
+sudo docker run -p 3000:3000 --name movetoen -e MONGO_DB="mongodb+srv://nglikwai:dse00com@cluster0.hwgq8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority" -e PORT=3000 -d dse00b/movetoen 
+
+# open browser
+http://localhost:80
+```

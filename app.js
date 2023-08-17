@@ -24,7 +24,7 @@ db.once("open", () => {
 
 app.use("/todos", todoController);
 
-const port = 3002;
+const port = process.env.PORT;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

@@ -3,12 +3,10 @@ const Logger = require("../logger/logger.model");
 const express = require("express");
 const router = express.Router();
 const { TodoStatus, TodoUrgent } = require("../../constants");
+const { getAllTodos } = require("./todo.service");
 
-console.log(TodoStatus);
-
-// Define route handlers for user-related routes
 router.get("/", async (req, res) => {
-  const todos = await Todo.find().sort({ createdAt: -1 });
+  const todos = await getAllTodos(req.query.planId);
   res.json(todos);
 });
 
@@ -41,9 +39,9 @@ router.put("/:id", async (req, res) => {
     if (req.body.description === todo.description) return;
     logDescription = ` ${todo.title} ${req.body.description}`;
   } else if (req.body.status) {
-    logDescription = ` ${todo.title} from ${
-      TodoStatus[todo.status]
-    } to ${TodoStatus[req.body.status]}`;
+    logDescription = ` ${todo.title} from ${TodoStatus[todo.status]} to ${
+      TodoStatus[req.body.status]
+    }`;
   } else if (req.body.person) {
     logDescription = `assign ${todo.title} to ${req.body.person}`;
   } else if (req.body.deadline) {
@@ -53,7 +51,7 @@ router.put("/:id", async (req, res) => {
       TodoUrgent[req.body.urgent]
     }`;
   } else {
-    return
+    return;
   }
   const logger = new Logger({
     description: logDescription,

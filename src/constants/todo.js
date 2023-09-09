@@ -10,5 +10,6 @@ const TodoUrgent = {
   0: "NORMAL",
   1: "HURRY",
   2: "URGENT",
+  3: "EXTREMELY URGENT"
 };
 module.exports = { TodoStatus, TodoUrgent };

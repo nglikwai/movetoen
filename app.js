@@ -1,36 +1,26 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
-const cors = require('cors')
-const mongoose = require("mongoose");
-const todoController = require("./src/modules/todo/todo.controller");
-const loggerController = require("./src/modules/logger/logger.controller");
-
+const cors = require("cors");
+const WebSocket = require("ws");
+const corConfig = require("./config");
 
 const app = express();
+
+const router = require("./router");
+const dbConnect = require("./dbConnect");
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({
-  origin: ['http://127.0.0.1:5500', 'https://movetoen.com', 'https://api.dse00.com:80', 'http://localhost:5500'],
-}))
-
-mongoose.connect(process.env.MONGO_DB, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+app.use(cors(corConfig));
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", `${req.headers.origin}`);
+  res.setHeader("Access-Control-Allow-Credentials", "true"); // Allow credentials
+  next();
+});
+const server = app.listen(process.env.PORT, () => {
+  console.log(`Server is running on port ${process.env.PORT}`);
 });
 
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
-db.once("open", () => {
-  console.log("Connected to MongoDB");
-});
-
-app.use("/todos", todoController);
-app.use("/loggers", loggerController);
-
-
-const port = process.env.PORT;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
-
+const wss = new WebSocket.Server({ server });
+router(app, wss);
+dbConnect();
